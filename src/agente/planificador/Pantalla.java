@@ -29,6 +29,8 @@ public class Pantalla extends javax.swing.JFrame {
         Agente pl=new Agente(nom,money);
         modelo.addElement("Agente: "+nom+"        Presupuesto: "+money+" Bs.");
         estados.setModel(modelo);
+        //  modelo=pl.comprar(modelo);
+        
     }
     
     
