@@ -1,16 +1,20 @@
-en(casa).
-en(tienda).
-en(cocina).
+en(casa,"en casa").
+en(tienda,"en tienda").
+en(cocina,"en cocina").
 
-presupuesto_minimo(39).
+ir(tienda,"se dirige a la tienda").
+ir(casa,"se dirige a la casa").
+ir(cocina,"se dirige a la cocina").
 
-parte_de_receta(harina).
-parte_de_receta(azucar).
-parte_de_receta(huevo).
-parte_de_receta(vainilla).
-parte_de_receta(mantequilla).
-parte_de_receta(levadura).
-parte_de_receta(leche).
+presupuesto_minimo(39,"dinero guardado").
+
+parte_de_receta(harina,"necesito 135g. de harina").
+parte_de_receta(azucar,"necesito 110g. de azucar").
+parte_de_receta(huevo,"necesito 1 huevo").
+parte_de_receta(vainilla,"necesito vainilla").
+parte_de_receta(mantequilla,"necesito 55g. de mantequilla").
+parte_de_receta(levadura,"necesito 5g. de levadura").
+parte_de_receta(leche,"necesito 60ml. de leche").
 
 precio(harina,10).
 precio(azucar,5).
@@ -20,8 +24,16 @@ precio(mantequilla,5).
 precio(leche,6).
 precio(levadura,3).
 
-se_mezcla_con(harina,levadura,bol_2).
-se_mezcla_con(mantequilla,azucar,bol_1).
+comprar(harina,"comprar harina: Listo!").
+comprar(azucar,"comprar azucar: Listo!").
+comprar(huevo,"comprar huevo: Listo!").
+comprar(vainilla,"comprar vainilla: Listo!").
+comprar(mantequilla,"comprar mantequilla: Listo!").
+comprar(leche,"comprar leche: Listo!").
+comprar(levadura,"comprar levadura: Listo!").
+
+se_mezcla_con(harina,levadura,bol_2,"mezclar harina y levadura en Bol_2").
+se_mezcla_con(mantequilla,azucar,bol_1,"mezclar mantequilla y azucar en Bol_1").
 
 agregar(bol_1,X,Y):- X==huevo,Y==mantequilla.
 agregar(bol_2,X):- X==leche.
@@ -34,7 +46,8 @@ comprar(X,Z):- precio(X,Y),Y<Z.
 recibir_dinero(X):- X>=39.
 
 tener(X, [X|_]).
-tener(X,[_|Ys]):- tener(X,Ys).
+tener(X,[_|Ys]):- (tener(X,Ys)-> tengo(X,Y) ; tengo(X,Y)).
+tengo(X,"tengo " + X).
 
 hornear(masa,X):- X==15.
 

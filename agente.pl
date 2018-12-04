@@ -1,16 +1,21 @@
-en(casa).
-en(tienda).
-en(cocina).
+en(casa,"en casa").
+en(tienda,"en tienda").
+en(cocina,"en cocina").
+en (masa,bandeja,"masa distribuida en la bandeja ").
 
-presupuesto_minimo(39).
+ir(tienda,"se dirige a la tienda").
+ir(casa,"se dirige a la casa").
+ir(cocina,"se dirige a la cocina").
 
-parte_de_receta(harina).
-parte_de_receta(azucar).
-parte_de_receta(huevo).
-parte_de_receta(vainilla).
-parte_de_receta(mantequilla).
-parte_de_receta(levadura).
-parte_de_receta(leche).
+presupuesto_minimo(39,"dinero guardado").
+
+parte_de_receta(harina,"necesito 135g. de harina").
+parte_de_receta(azucar,"necesito 110g. de azucar").
+parte_de_receta(huevo,"necesito 1 huevo").
+parte_de_receta(vainilla,"necesito vainilla").
+parte_de_receta(mantequilla,"necesito 55g. de mantequilla").
+parte_de_receta(levadura,"necesito 5g. de levadura").
+parte_de_receta(leche,"necesito 60ml. de leche").
 
 precio(harina,10).
 precio(azucar,5).
@@ -20,21 +25,39 @@ precio(mantequilla,5).
 precio(leche,6).
 precio(levadura,3).
 
-se_mezcla_con(harina,levadura,bol_2).
-se_mezcla_con(mantequilla,azucar,bol_1).
+comprar(harina,"comprar harina: Listo!").
+comprar(azucar,"comprar azucar: Listo!").
+comprar(huevo,"comprar huevo: Listo!").
+comprar(vainilla,"comprar vainilla: Listo!").
+comprar(mantequilla,"comprar mantequilla: Listo!").
+comprar(leche,"comprar leche: Listo!").
+comprar(levadura,"comprar levadura: Listo!").
+consultar_presupuesto(X,Z):- precio(X,Y),Y<Z.
 
-agregar(bol_1,X,Y):- X==huevo,Y==mantequilla.
-agregar(bol_2,X):- X==leche.
-agregar(bandeja,X):- X==capucillos.
+mezclar(harina,levadura,bol_2,"mezclar harina y levadura en Bol_2").
+
+batir(mantequilla,azucar,bol_1,"batir mantequilla y azucar en Bol_1").
+
+agregar(bol_1,huevo,mantequilla,"agregando huevo y mantequilla a la mezcla
+previa del bol_1").
+agregar(bol_2,leche,"agregando leche a la mezcla previa del bol_2").
+agregar(bandeja,capucillos,"poniendo los capucillos de pancakes en la bandeja").
 
 calentar(horno,X):- X==160.
+calentar(horno,"Calentando horno a 160 grados").
+caliente(horno,"El horno esta caliente").
 
-comprar(X,Z):- precio(X,Y),Y<Z.
+dividir_en(masa,bandeja,"masa es dividida en la bandeja").
 
-recibir_dinero(X):- X>=39.
+juntar(bol_1,bol_2,"bol_1 y bol_2 juntos para hacer la masa").
+
+poner(bandeja,horno,"poner bandeja en horno").
+
+recibir_dinero(39,"dinero necesario para ir de compras").
 
 tener(X, [X|_]).
 tener(X,[_|Ys]):- tener(X,Ys).
+tener(masa, "masa lista para ser divida").
+tener(bandeja,capucillos,"varificando capucillos en bandeja: Listo!").
 
-hornear(masa,X):- X==15.
-
+hornear(masa,15,"Hornear masa por 15 minutos: Esperando...").
