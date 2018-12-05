@@ -14,6 +14,9 @@ import java.util.*;
 import java.util.stream.IntStream;
 import javax.swing.*;
 import org.jpl7.Query;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pantalla extends javax.swing.JFrame {
 
@@ -21,22 +24,19 @@ public class Pantalla extends javax.swing.JFrame {
     int money=0;
     DefaultListModel modelo=new DefaultListModel();
     int contadorLista=0;
+    Agente pl;
     public Pantalla() {
         initComponents();
+        cupcake.setVisible(false);
     }
     public void inicializarAgente(){
         money = Integer.parseInt(dinero.getText());
         String nom = nombre.getText();
-        Agente pl=new Agente(nom,money);
+        pl=new Agente(nom,money);
         modelo.addElement("Agente: "+nom+"        Presupuesto: "+money+" Bs.");
         estados.setModel(modelo);
         pl.moverRobotinCasa();
         modelo=pl.comprar(modelo);
-        try{Thread.sleep(1000);
-        }catch(InterruptedException e){}
-        if(pl.pasar){
-        modelo=pl.hornear(modelo);
-        }
     }
     
     public class Agente {
@@ -121,7 +121,7 @@ public class Pantalla extends javax.swing.JFrame {
            
         res.addElement(consultarText("en(tienda,X)."));
         res.addElement("/ / / / / / / / / / / / / / / / / / / / / / / / / /");
-        res.addElement(consultarText("ir(casa,X)."));
+        
         }
         return res;
      }
@@ -129,13 +129,66 @@ public class Pantalla extends javax.swing.JFrame {
      public DefaultListModel hornear(DefaultListModel entrada){
          DefaultListModel res=entrada;
          //res.addElement("");
+         res.addElement(consultarText("ir(casa,X)."));
          moverRobotinCasa();
          res.addElement(consultarText("en(casa,X)."));
-        
+         res.addElement(consultarText("ir(cocina,X)."));
+         res.addElement(consultarText("en(cocina,X)."));
+         
+         int azar[]=desorden(4);
+         boolean horno=false;
+         boolean agregar=false;
+         boolean bol1=false;
+         boolean bol2=false;
+         
+         for(int i=0;i<4;i++){
+            if(azar[i]==0){
+                if(consultarB("en(cocina).")){
+                   res.addElement(consultarText("calentar(horno,X)."));
+                }
+                horno=true;
+            }else if(azar[i]==1){
+                if(consultarB("en(cocina).")){
+                   res.addElement(consultarText("batir(mantequilla,azucar,bol_1,X)."));
+                   res.addElement(consultarText("agregar(bol_1,huevo,mantequilla,X)."));
+                   bol1=true;
+                   if(bol2==true){
+                       res.addElement(consultarText("juntar(bol_1,bol_2,X)."));
+                       res.addElement(consultarText("obtener(masa,X)."));
+                       
+                   }
+                }
+            }else if(azar[i]==2){
+                if(consultarB("en(cocina).")){
+                    res.addElement(consultarText("mezclar(harina,levadura,bol_2,X)."));
+                    res.addElement(consultarText("agregar(bol_2,leche,X)."));
+                    bol2=true;
+                    if(bol1==true){
+                        res.addElement(consultarText("juntar(bol_1,bol_2,X)."));
+                        res.addElement(consultarText("obtener(masa,X)."));
+                        
+                    } 
+                }
+            }else if(azar[i]==3){
+                if(consultarB("en(cocina).")){
+                    res.addElement(consultarText("agregar(bandeja,capucillos,X)."));
+                }
+                 agregar=true;
+            }    
+         }
+         if(agregar){
+            res.addElement(consultarText("dividir_en(masa,bandeja,X)."));
+         }
+         if(consultarText("caliente(horno,X).").equals("El horno esta caliente") && 
+                 consultarText("en(masa,bandeja,X).").equals("masa distribuida en la bandeja")&&horno){
+             res.addElement(consultarText("hornear(masa,15,X)."));
+             res.addElement(consultarText("sacar(bandeja,horno,X)."));
+         }
+         res.addElement(" ");
+         res.addElement(consultarText("obtener(cupcakes ,X)."));
          
          
-         
-         
+         cupcake.setVisible(true);
          return res;
      }
      
@@ -165,7 +218,7 @@ public class Pantalla extends javax.swing.JFrame {
          robotin.setBounds(330,123,96,96);
      }
      public void moverRobotinCasa(){
-     robotin.setBounds(123,123,96,96);
+         robotin.setBounds(123,123,96,96);
      }
      
      
@@ -228,6 +281,7 @@ public class Pantalla extends javax.swing.JFrame {
         nombre = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        cupcake = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(760, 470));
@@ -267,6 +321,13 @@ public class Pantalla extends javax.swing.JFrame {
 
         jLabel4.setText("Log de Actividades:");
 
+        cupcake.setText("Ver Cupcakes");
+        cupcake.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cupcakeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -287,7 +348,10 @@ public class Pantalla extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(26, 26, 26)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(207, 207, 207)
+                                        .addComponent(cupcake))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(layout.createSequentialGroup()
                                             .addComponent(BtnCocina)
@@ -318,16 +382,19 @@ public class Pantalla extends javax.swing.JFrame {
                     .addComponent(casa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(robotin, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BtnCocina)
-                    .addComponent(BtnCompras)
-                    .addComponent(dinero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(BtnCocina)
+                            .addComponent(BtnCompras)
+                            .addComponent(dinero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel4))
+                    .addComponent(cupcake))
                 .addGap(4, 4, 4)
                 .addComponent(ScrolEstados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -337,13 +404,20 @@ public class Pantalla extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnCocinaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCocinaActionPerformed
-        // TODO add your handling code here:
+     if(pl.pasar){
+        modelo=pl.hornear(modelo);
+        
+     }
     }//GEN-LAST:event_BtnCocinaActionPerformed
 
     private void BtnComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnComprasActionPerformed
-        
         inicializarAgente();
     }//GEN-LAST:event_BtnComprasActionPerformed
+
+    private void cupcakeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cupcakeActionPerformed
+       Cupcake pantalla=new Cupcake();
+       pantalla.show();
+    }//GEN-LAST:event_cupcakeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -386,6 +460,7 @@ public class Pantalla extends javax.swing.JFrame {
     private javax.swing.JButton BtnCompras;
     private javax.swing.JScrollPane ScrolEstados;
     private javax.swing.JLabel casa;
+    private javax.swing.JButton cupcake;
     private javax.swing.JTextField dinero;
     private javax.swing.JList<String> estados;
     private javax.swing.JLabel jLabel1;

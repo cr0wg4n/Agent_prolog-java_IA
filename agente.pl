@@ -1,8 +1,9 @@
 en(casa,"en casa").
 en(tienda,"en tienda").
 en(cocina,"en cocina").
-en(masa,bandeja,"masa distribuida en la bandeja ").
+en(masa,bandeja,"masa distribuida en la bandeja").
 en(tienda).
+en(cocina).
 
 ir(tienda,"...se dirige a la tienda").
 ir(casa,"...se dirige a la casa").
@@ -42,8 +43,7 @@ mezclar(harina,levadura,bol_2,"mezclar harina y levadura en Bol_2").
 
 batir(mantequilla,azucar,bol_1,"batir mantequilla y azucar en Bol_1").
 
-agregar(bol_1,huevo,mantequilla,"agregando huevo y mantequilla a la mezcla
-previa del bol_1").
+agregar(bol_1,huevo,mantequilla,"agregando huevo y mantequilla a la mezcla previa del bol_1").
 agregar(bol_2,leche,"agregando leche a la mezcla previa del bol_2").
 agregar(bandeja,capucillos,"poniendo los capucillos de pancakes en la bandeja").
 
@@ -53,7 +53,7 @@ caliente(horno,"El horno esta caliente").
 
 dividir_en(masa,bandeja,"masa es dividida en la bandeja").
 
-juntar(bol_1,bol_2,"bol_1 y bol_2 juntos para hacer la masa").
+juntar(bol_1,bol_2,"bol_1 y bol_2 juntados para hacer la masa").
 
 poner(bandeja,horno,"poner bandeja en horno").
 
@@ -61,7 +61,11 @@ recibir_dinero(39,"dinero necesario para ir de compras").
 
 tener(X, [X|_]).
 tener(X,[_|Ys]):- tener(X,Ys).
-tener(masa, "masa lista para ser divida").
 tener(bandeja,capucillos,"varificando capucillos en bandeja: Listo!").
 
+obtener(masa, "masa lista para ser divida").
+obtener(cupcakes, "Cupcakes listos para servir!").
+
 hornear(masa,15,"Hornear masa por 15 minutos: Esperando...").
+
+sacar(bandeja,horno,"sacando bandeja del horno").
