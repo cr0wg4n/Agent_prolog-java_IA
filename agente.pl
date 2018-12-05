@@ -1,7 +1,7 @@
 en(casa,"en casa").
 en(tienda,"en tienda").
 en(cocina,"en cocina").
-en (masa,bandeja,"masa distribuida en la bandeja ").
+en(masa,bandeja,"masa distribuida en la bandeja ").
 
 ir(tienda,"se dirige a la tienda").
 ir(casa,"se dirige a la casa").
