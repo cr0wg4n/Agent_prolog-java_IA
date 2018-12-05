@@ -2,10 +2,13 @@ en(casa,"en casa").
 en(tienda,"en tienda").
 en(cocina,"en cocina").
 en(masa,bandeja,"masa distribuida en la bandeja ").
+en(tienda).
 
-ir(tienda,"se dirige a la tienda").
-ir(casa,"se dirige a la casa").
-ir(cocina,"se dirige a la cocina").
+ir(tienda,"...se dirige a la tienda").
+ir(casa,"...se dirige a la casa").
+ir(cocina,"...se dirige a la cocina").
+
+sin_(presupuesto,"ya no tengo dinero").
 
 presupuesto_minimo(39,"dinero guardado").
 
@@ -32,6 +35,7 @@ comprar(vainilla,"comprar vainilla: Listo!").
 comprar(mantequilla,"comprar mantequilla: Listo!").
 comprar(leche,"comprar leche: Listo!").
 comprar(levadura,"comprar levadura: Listo!").
+
 consultar_presupuesto(X,Z):- precio(X,Y),Y<Z.
 
 mezclar(harina,levadura,bol_2,"mezclar harina y levadura en Bol_2").

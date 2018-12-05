@@ -10,13 +10,14 @@ package agente.planificador;
  * @author IA team
  */
 import static java.lang.Thread.sleep;
+import java.util.*;
+import java.util.stream.IntStream;
 import javax.swing.*;
+import org.jpl7.Query;
 
 public class Pantalla extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Pantalla
-     */
+    
     int money=0;
     DefaultListModel modelo=new DefaultListModel();
     int contadorLista=0;
@@ -29,9 +30,184 @@ public class Pantalla extends javax.swing.JFrame {
         Agente pl=new Agente(nom,money);
         modelo.addElement("Agente: "+nom+"        Presupuesto: "+money+" Bs.");
         estados.setModel(modelo);
-        //  modelo=pl.comprar(modelo);
-        
+        pl.moverRobotinCasa();
+        modelo=pl.comprar(modelo);
+        try{Thread.sleep(1000);
+        }catch(InterruptedException e){}
+        if(pl.pasar){
+        modelo=pl.hornear(modelo);
+        }
     }
+    
+    public class Agente {
+     
+     String name;
+     int presupuesto;
+     String compras[]=new String[]{"harina","azucar","huevo","mantequilla","leche","levadura","vainilla"};
+     String lugares[]=new String[]{"casa","tienda","cocina"};
+     String elementos[]=new String[]{"capucillo","bandeja","horno"};
+     ArrayList<String> compra_inicial = new ArrayList<String>();
+     
+     ArrayList<String> tener = new ArrayList<String>();
+     boolean pasar=true;
+     public Agente(String nombre,int dinero){
+         name=nombre;
+         presupuesto=dinero;
+         System.out.println("Agente: "+name+"\nPresupuesto: "+presupuesto+" Bs.");
+         connect();
+     }
+     public String formatoLista(String[] lista){
+        String res="[";
+        for(int i=0;i<lista.length;i++){
+            res=res+lista[i]+",";
+        }
+        res=res.substring(0,res.length()-1)+"]";
+        return res;
+     }
+      public String formatoArray(ArrayList<String> lista){
+        String res="[";
+        for(int i=0;i<lista.size();i++){
+            res=res+lista.get(i)+",";
+        }
+        if(lista.size()==0){
+            res=res+"nada]";
+        }else{
+            res=res.substring(0,res.length()-1)+"]";
+        }
+        return res;
+     }
+     /////////////////////////////////////////////////////////////
+     public DefaultListModel comprar(DefaultListModel entrada){
+         DefaultListModel res=entrada;
+         //entrada.addElement("");
+        String aux = consultarText("en(casa,X).");
+        res.addElement(aux);
+        boolean aux2;
+        for(int i=0;i<compras.length;i++){
+            aux2=consultarB("tener("+compras[i]+","+formatoArray(compra_inicial)+").");
+            aux = (aux2==true)?"":"no tengo "+compras[i];
+            res.addElement(aux);
+        }
+        aux=consultarText("ir("+lugares[1]+",X).");
+        res.addElement(aux);
+        moverRobotinTienda();
+        res.addElement(consultarText("en(tienda,X)."));
+        int[]azar=desorden(7);
+        
+        for(int i=0;i<azar.length;i++){
+            aux2=consultarB("consultar_presupuesto("+compras[azar[i]]+","+presupuesto+").");
+            if(aux2==true){
+                res.addElement("Comprar "+compras[azar[i]]);
+                aux = consultarNumbers("precio("+compras[azar[i]]+",X).");
+                int gasto=Integer.parseInt(aux);
+                res.addElement("gaste --> "+aux+" Bs.");
+                presupuesto=presupuesto-gasto;
+                res.addElement("me queda "+presupuesto+" Bs. de cambio");
+                compra_inicial.add(compras[azar[i]]);
+            }else{
+                res.addElement(consultarText("sin_(presupuesto,X)."));
+                res.addElement("FIN");
+                pasar=false;
+                break;
+            }
+        }
+        
+        if(pasar){
+           for(int i=0;i<compras.length;i++){
+                aux2=consultarB("tener("+compras[i]+","+formatoArray(compra_inicial)+").");
+                aux = (aux2==true)? "tengo "+compras[i]:"no tengo "+compras[i];
+                res.addElement(aux);
+           }
+           
+        res.addElement(consultarText("en(tienda,X)."));
+        res.addElement("/ / / / / / / / / / / / / / / / / / / / / / / / / /");
+        res.addElement(consultarText("ir(casa,X)."));
+        }
+        return res;
+     }
+     ////////////////////////////////////////////////////////////
+     public DefaultListModel hornear(DefaultListModel entrada){
+         DefaultListModel res=entrada;
+         //res.addElement("");
+         moverRobotinCasa();
+         res.addElement(consultarText("en(casa,X)."));
+        
+         
+         
+         
+         
+         return res;
+     }
+     
+     /////////////////////////////////////////////////////////////
+     
+     /*TESTINGs
+        int[] nuevo= desorden();
+         for (int i = 0; i < 7; i++) {
+            System.out.println(nuevo[i]+"-->");
+         }
+     */
+     public int[] desorden(int tam){
+        int[] numerosAleatorios = IntStream.rangeClosed(0,tam-1).toArray();
+        Random r = new Random();
+        for (int i = numerosAleatorios.length; i > 0; i--) {
+            int posicion = r.nextInt(i);
+            int tmp = numerosAleatorios[i-1];
+            numerosAleatorios[i - 1] = numerosAleatorios[posicion];
+            numerosAleatorios[posicion] = tmp;
+        }
+        return numerosAleatorios;
+     }
+     public void moverRobotinTienda(){
+         robotin.setBounds(550,123,96,96);
+     }
+     public void moverRobotinCentro(){
+         robotin.setBounds(330,123,96,96);
+     }
+     public void moverRobotinCasa(){
+     robotin.setBounds(123,123,96,96);
+     }
+     
+     
+     public String boolToAction(String accion){
+     String res;
+     res=accion;
+     return res;
+     }
+     public void connect(){
+      String t1 = "consult('agente.pl')";
+      System.out.println((consultarB(t1) ? "Base de conocimientos: agente.pl" : "Sin conexión"));
+      
+     }
+     public boolean consultarB(String pregunta){
+     boolean res;
+     Query consulta=new Query(pregunta);
+     res=consulta.hasSolution();
+     return res;
+     }
+     public String consultarText(String pregunta){
+     String res;
+     Query consulta=new Query(pregunta);
+     res=consulta.oneSolution().toString();
+     res=res.substring(4,res.length()-2);
+     return res;
+     }
+     public String consultarNumbers(String pregunta){
+     String res;
+     Query consulta=new Query(pregunta);
+     res=consulta.oneSolution().toString();
+     res=res.substring(3,res.length()-1);
+     return res;
+     }
+}
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     @SuppressWarnings("unchecked")
@@ -99,7 +275,7 @@ public class Pantalla extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(casa, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(159, 159, 159)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(robotin)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(tienda, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -165,6 +341,7 @@ public class Pantalla extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnCocinaActionPerformed
 
     private void BtnComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnComprasActionPerformed
+        
         inicializarAgente();
     }//GEN-LAST:event_BtnComprasActionPerformed
 
