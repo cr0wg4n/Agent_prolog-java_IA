@@ -57,7 +57,7 @@ juntar(bol_1,bol_2,"bol_1 y bol_2 juntados para hacer la masa").
 
 poner(bandeja,horno,"poner bandeja en horno").
 
-recibir_dinero(39,"dinero necesario para ir de compras").
+recibir_dinero(39,"dinero necesario para ir de compra").
 
 tener(X, [X|_]).
 tener(X,[_|Ys]):- tener(X,Ys).
